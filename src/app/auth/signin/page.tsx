@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Mail, Lock, ArrowRight, UserPlus, LogIn } from 'lucide-react';
 import { AuthInput, SubmitButton } from '@/features/auth/components/AuthComponents';
 
-export default function AuthPage() {
+function AuthContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -92,8 +92,8 @@ export default function AuthPage() {
                 <button
                     onClick={() => { setMode('signin'); setError(''); }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ${mode === 'signin'
-                            ? 'bg-primary text-black shadow-lg'
-                            : 'text-text-muted hover:text-white'
+                        ? 'bg-primary text-black shadow-lg'
+                        : 'text-text-muted hover:text-white'
                         }`}
                 >
                     <LogIn size={16} /> Sign In
@@ -101,8 +101,8 @@ export default function AuthPage() {
                 <button
                     onClick={() => { setMode('signup'); setError(''); }}
                     className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-300 ${mode === 'signup'
-                            ? 'bg-primary text-black shadow-lg'
-                            : 'text-text-muted hover:text-white'
+                        ? 'bg-primary text-black shadow-lg'
+                        : 'text-text-muted hover:text-white'
                         }`}
                 >
                     <UserPlus size={16} /> Sign Up
@@ -154,5 +154,17 @@ export default function AuthPage() {
                 </SubmitButton>
             </form>
         </div>
+    );
+}
+
+export default function AuthPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        }>
+            <AuthContent />
+        </Suspense>
     );
 }
