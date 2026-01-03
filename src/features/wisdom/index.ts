@@ -1,0 +1,1 @@
+export { WisdomTranslator } from './WisdomTranslator';

@@ -40,6 +40,10 @@
     padding: var(--space-8);
 }
 
+.card-padding-xl {
+    padding: var(--space-12);
+}
+
 /* Hover Effect */
 .card-hover:hover {
     transform: translateY(-4px);

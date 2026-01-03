@@ -4,7 +4,7 @@ import './Card.css';
 interface CardProps {
     children: React.ReactNode;
     variant?: 'default' | 'glass' | 'elevated';
-    padding?: 'none' | 'sm' | 'md' | 'lg';
+    padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
     hover?: boolean;
     onClick?: () => void;
     className?: string;
