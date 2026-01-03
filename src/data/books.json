@@ -1,0 +1,296 @@
+[
+    {
+        "id": "atomic-habits",
+        "title": "Atomic Habits",
+        "author": "James Clear",
+        "description": "A revolutionary system for getting 1% better every day. Learn how tiny changes in behavior can lead to remarkable results over time through the compound effect of small habits.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/91bYsX41DVL.jpg",
+        "categories": [
+            "Self-Improvement",
+            "Psychology",
+            "Productivity"
+        ],
+        "difficulty": "beginner",
+        "pageCount": 320,
+        "estimatedHours": 8,
+        "publishedYear": 2018,
+        "keyTopics": [
+            "habit formation",
+            "behavior change",
+            "identity",
+            "compound growth",
+            "systems vs goals"
+        ],
+        "targetAudience": [
+            "anyone seeking personal growth",
+            "professionals",
+            "students",
+            "entrepreneurs"
+        ],
+        "prerequisites": []
+    },
+    {
+        "id": "thinking-fast-slow",
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "description": "Nobel Prize winner Daniel Kahneman reveals the two systems that drive how we think—fast, intuitive thinking and slow, deliberate thinking—and how they shape our judgments and decisions.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/71wvKXWfcML.jpg",
+        "categories": [
+            "Psychology",
+            "Economics",
+            "Decision Making"
+        ],
+        "difficulty": "intermediate",
+        "pageCount": 499,
+        "estimatedHours": 15,
+        "publishedYear": 2011,
+        "keyTopics": [
+            "cognitive biases",
+            "decision making",
+            "behavioral economics",
+            "intuition",
+            "rationality"
+        ],
+        "targetAudience": [
+            "business leaders",
+            "investors",
+            "anyone interested in psychology"
+        ],
+        "prerequisites": []
+    },
+    {
+        "id": "7-habits",
+        "title": "The 7 Habits of Highly Effective People",
+        "author": "Stephen R. Covey",
+        "description": "A principle-centered approach to solving personal and professional problems. Covey presents a holistic, integrated approach to personal and interpersonal effectiveness.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/71j0FZjVLjL.jpg",
+        "categories": [
+            "Self-Improvement",
+            "Leadership",
+            "Business"
+        ],
+        "difficulty": "beginner",
+        "pageCount": 381,
+        "estimatedHours": 10,
+        "publishedYear": 1989,
+        "keyTopics": [
+            "principles",
+            "effectiveness",
+            "character",
+            "paradigm shift",
+            "interdependence"
+        ],
+        "targetAudience": [
+            "professionals",
+            "leaders",
+            "anyone seeking effectiveness"
+        ],
+        "prerequisites": []
+    },
+    {
+        "id": "deep-work",
+        "title": "Deep Work",
+        "author": "Cal Newport",
+        "description": "Rules for focused success in a distracted world. Learn to cultivate intense focus and produce high-quality work that matters in an economy that rewards rare and valuable skills.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/81JQS4+4wkL.jpg",
+        "categories": [
+            "Productivity",
+            "Business",
+            "Self-Improvement"
+        ],
+        "difficulty": "beginner",
+        "pageCount": 296,
+        "estimatedHours": 7,
+        "publishedYear": 2016,
+        "keyTopics": [
+            "focus",
+            "productivity",
+            "concentration",
+            "knowledge work",
+            "digital minimalism"
+        ],
+        "targetAudience": [
+            "knowledge workers",
+            "writers",
+            "programmers",
+            "students"
+        ],
+        "prerequisites": []
+    },
+    {
+        "id": "sapiens",
+        "title": "Sapiens: A Brief History of Humankind",
+        "author": "Yuval Noah Harari",
+        "description": "A groundbreaking narrative of humanity's creation and evolution that explores how we came to dominate the planet through cognitive, agricultural, and scientific revolutions.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/71N3+2nVPaL.jpg",
+        "categories": [
+            "History",
+            "Anthropology",
+            "Science"
+        ],
+        "difficulty": "intermediate",
+        "pageCount": 443,
+        "estimatedHours": 12,
+        "publishedYear": 2011,
+        "keyTopics": [
+            "human evolution",
+            "history",
+            "culture",
+            "religion",
+            "future of humanity"
+        ],
+        "targetAudience": [
+            "curious minds",
+            "history enthusiasts",
+            "philosophers"
+        ],
+        "prerequisites": []
+    },
+    {
+        "id": "rich-dad-poor-dad",
+        "title": "Rich Dad Poor Dad",
+        "author": "Robert T. Kiyosaki",
+        "description": "What the rich teach their kids about money that the poor and middle class do not. A personal finance classic that challenges conventional thinking about work, money, and investing.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/81BE7eeKzAL.jpg",
+        "categories": [
+            "Finance",
+            "Business",
+            "Self-Improvement"
+        ],
+        "difficulty": "beginner",
+        "pageCount": 336,
+        "estimatedHours": 6,
+        "publishedYear": 1997,
+        "keyTopics": [
+            "financial literacy",
+            "investing",
+            "assets vs liabilities",
+            "entrepreneurship",
+            "money mindset"
+        ],
+        "targetAudience": [
+            "young adults",
+            "anyone seeking financial independence",
+            "entrepreneurs"
+        ],
+        "prerequisites": []
+    },
+    {
+        "id": "how-to-win-friends",
+        "title": "How to Win Friends and Influence People",
+        "author": "Dale Carnegie",
+        "description": "The timeless classic on human relations that has helped millions become effective communicators, leaders, and influential people in both personal and professional relationships.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/71vK0WVQ4rL.jpg",
+        "categories": [
+            "Communication",
+            "Self-Improvement",
+            "Business"
+        ],
+        "difficulty": "beginner",
+        "pageCount": 288,
+        "estimatedHours": 6,
+        "publishedYear": 1936,
+        "keyTopics": [
+            "social skills",
+            "influence",
+            "persuasion",
+            "leadership",
+            "empathy"
+        ],
+        "targetAudience": [
+            "professionals",
+            "salespeople",
+            "leaders",
+            "anyone improving social skills"
+        ],
+        "prerequisites": []
+    },
+    {
+        "id": "mans-search-meaning",
+        "title": "Man's Search for Meaning",
+        "author": "Viktor E. Frankl",
+        "description": "Psychiatrist Viktor Frankl's memoir of life in Nazi concentration camps and the spiritual lessons drawn from suffering. A profound exploration of purpose and meaning in life.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/71oyrTsgjLL.jpg",
+        "categories": [
+            "Psychology",
+            "Philosophy",
+            "Memoir"
+        ],
+        "difficulty": "intermediate",
+        "pageCount": 165,
+        "estimatedHours": 4,
+        "publishedYear": 1946,
+        "keyTopics": [
+            "meaning",
+            "suffering",
+            "purpose",
+            "logotherapy",
+            "resilience"
+        ],
+        "targetAudience": [
+            "anyone seeking purpose",
+            "psychology enthusiasts",
+            "philosophers"
+        ],
+        "prerequisites": []
+    },
+    {
+        "id": "power-of-now",
+        "title": "The Power of Now",
+        "author": "Eckhart Tolle",
+        "description": "A guide to spiritual enlightenment that teaches how to live fully in the present moment. Tolle explains how to free yourself from the tyranny of the mind and ego.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/71R6vLZ6MKL.jpg",
+        "categories": [
+            "Spirituality",
+            "Self-Improvement",
+            "Mindfulness"
+        ],
+        "difficulty": "intermediate",
+        "pageCount": 236,
+        "estimatedHours": 6,
+        "publishedYear": 1997,
+        "keyTopics": [
+            "mindfulness",
+            "presence",
+            "consciousness",
+            "ego",
+            "inner peace"
+        ],
+        "targetAudience": [
+            "spiritual seekers",
+            "stressed individuals",
+            "meditation practitioners"
+        ],
+        "prerequisites": []
+    },
+    {
+        "id": "lean-startup",
+        "title": "The Lean Startup",
+        "author": "Eric Ries",
+        "description": "How today's entrepreneurs use continuous innovation to create radically successful businesses. A methodology for developing businesses and products efficiently.",
+        "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/81-QB7nDh4L.jpg",
+        "categories": [
+            "Business",
+            "Entrepreneurship",
+            "Innovation"
+        ],
+        "difficulty": "intermediate",
+        "pageCount": 336,
+        "estimatedHours": 8,
+        "publishedYear": 2011,
+        "keyTopics": [
+            "lean methodology",
+            "MVP",
+            "validated learning",
+            "pivot",
+            "entrepreneurship"
+        ],
+        "targetAudience": [
+            "entrepreneurs",
+            "startup founders",
+            "product managers",
+            "innovators"
+        ],
+        "prerequisites": []
+    }
+]

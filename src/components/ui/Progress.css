@@ -1,0 +1,95 @@
+.progress-wrapper {
+    width: 100%;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.progress-bar {
+    width: 100%;
+    background: var(--color-surface);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+/* Sizes */
+.progress-sm {
+    height: 4px;
+}
+
+.progress-md {
+    height: 8px;
+}
+
+.progress-lg {
+    height: 12px;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow) ease;
+}
+
+/* Variants */
+.progress-fill.progress-default {
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+}
+
+.progress-fill.progress-success {
+    background: linear-gradient(90deg, var(--color-success) 0%, var(--color-success-light) 100%);
+}
+
+.progress-fill.progress-warning {
+    background: linear-gradient(90deg, var(--color-warning) 0%, #fbbf24 100%);
+}
+
+/* Circular Progress */
+.progress-circle-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-circle-bg {
+    fill: none;
+    stroke: var(--color-surface);
+}
+
+.progress-circle-fill {
+    fill: none;
+    stroke-linecap: round;
+    transition: stroke-dashoffset var(--transition-slow) ease;
+}
+
+.progress-circle-fill.progress-circle-default {
+    stroke: var(--color-primary);
+}
+
+.progress-circle-fill.progress-circle-success {
+    stroke: var(--color-success);
+}
+
+.progress-circle-value {
+    position: absolute;
+    display: flex;
+    align-items: baseline;
+    gap: 1px;
+}
+
+.progress-circle-number {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+}
+
+.progress-circle-percent {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}

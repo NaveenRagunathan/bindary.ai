@@ -1,0 +1,97 @@
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.input-full {
+    width: 100%;
+}
+
+.input-label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 0 var(--space-4);
+    transition: all var(--transition-fast);
+}
+
+.input-container:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.1);
+}
+
+.input-container.input-error {
+    border-color: var(--color-error);
+}
+
+.input-container.input-error:focus-within {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.input-icon {
+    display: flex;
+    align-items: center;
+    color: var(--color-text-muted);
+}
+
+.input-field {
+    flex: 1;
+    height: 48px;
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    font-size: var(--text-base);
+    outline: none;
+}
+
+.input-field::placeholder {
+    color: var(--color-text-muted);
+}
+
+.textarea-field {
+    width: 100%;
+    min-height: 120px;
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    color: var(--color-text-primary);
+    font-size: var(--text-base);
+    font-family: inherit;
+    resize: vertical;
+    transition: all var(--transition-fast);
+}
+
+.textarea-field:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.1);
+}
+
+.textarea-field.input-error {
+    border-color: var(--color-error);
+}
+
+.textarea-field::placeholder {
+    color: var(--color-text-muted);
+}
+
+.input-error-text {
+    font-size: var(--text-sm);
+    color: var(--color-error);
+}
+
+.input-helper {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}

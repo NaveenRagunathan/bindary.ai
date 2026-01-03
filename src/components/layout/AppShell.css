@@ -1,0 +1,50 @@
+.app-shell {
+    min-height: 100vh;
+    background: var(--color-background);
+}
+
+.app-shell.with-sidebar {
+    padding-left: 260px;
+}
+
+.app-main {
+    min-height: 100vh;
+    position: relative;
+}
+
+.app-main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 400px;
+    background: radial-gradient(ellipse at 50% 0%,
+            rgba(92, 122, 234, 0.1) 0%,
+            transparent 60%);
+    pointer-events: none;
+}
+
+.app-content {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-8);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .app-shell.with-sidebar {
+        padding-left: 72px;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-shell.with-sidebar {
+        padding-left: 0;
+    }
+
+    .app-content {
+        padding: var(--space-4);
+    }
+}
