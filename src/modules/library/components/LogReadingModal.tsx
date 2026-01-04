@@ -27,7 +27,11 @@ export function LogReadingModal({ isOpen, onClose, preselectedBookId, onSuccess 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        setBooks(getAllBooks());
+        const loadBooks = async () => {
+            const allBooks = await getAllBooks();
+            setBooks(allBooks);
+        };
+        loadBooks();
     }, []);
 
     useEffect(() => {
