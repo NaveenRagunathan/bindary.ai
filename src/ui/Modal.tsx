@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import './Modal.css';
 
@@ -19,6 +20,13 @@ export function Modal({
     size = 'md',
     showCloseButton = true,
 }: ModalProps) {
+    const [mounted, setMounted] = React.useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+
     // Close on escape key
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
@@ -36,9 +44,9 @@ export function Modal({
         };
     }, [isOpen, onClose]);
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
+    return createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div
                 className={`modal-content modal-${size}`}
@@ -56,6 +64,7 @@ export function Modal({
                 )}
                 <div className="modal-body">{children}</div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

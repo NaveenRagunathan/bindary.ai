@@ -1,4 +1,4 @@
-import type { UserProfile, ReadingProgress, BookRecommendation, Conversation, Highlight } from '@/types';
+import type { UserProfile, ReadingProgress, BookRecommendation, Conversation, Highlight, Book } from '@/types';
 
 const STORAGE_KEYS = {
     USER_PROFILE: 'bindery_user_profile',
@@ -10,6 +10,7 @@ const STORAGE_KEYS = {
     READING_SESSIONS: 'bindery_reading_sessions',
     HIGHLIGHTS: 'bindery_highlights',
     EXPERIMENTS: 'bindery_experiments',
+    USER_BOOKS: 'bindery_user_books',
 };
 
 // ============================================
@@ -417,3 +418,5 @@ export function clearAllData(): void {
 
 // Export storage keys for debugging
 export { STORAGE_KEYS };
+
+

@@ -1,20 +1,35 @@
-import type { Book } from '@/types'; // Types are still global or need to be moved
+import type { Book } from '@/types';
 import booksData from '../data/books.json';
+export async function getAllBooks(): Promise<Book[]> {
+    const staticBooks = booksData as Book[];
 
-// Load books from JSON (local curated collection)
-export function getAllBooks(): Book[] {
-    return booksData as Book[];
+    // Fetch user books from API
+    try {
+        const res = await fetch('/api/books', {
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        });
+        if (res.ok) {
+            const userBooks = await res.json();
+            return [...staticBooks, ...userBooks];
+        }
+    } catch (error) {
+        console.error('Failed to fetch user books:', error);
+    }
+
+    return staticBooks;
 }
 
 // Get book by ID
-export function getBookById(id: string): Book | null {
-    const books = getAllBooks();
+export async function getBookById(id: string): Promise<Book | null> {
+    const books = await getAllBooks();
     return books.find((b) => b.id === id) || null;
 }
 
 // Search books by query (local)
-export function searchBooks(query: string): Book[] {
-    const books = getAllBooks();
+export async function searchBooks(query: string): Promise<Book[]> {
+    const books = await getAllBooks();
     const lowerQuery = query.toLowerCase();
 
     return books.filter(
@@ -27,16 +42,16 @@ export function searchBooks(query: string): Book[] {
 }
 
 // Filter books by category
-export function getBooksByCategory(category: string): Book[] {
-    const books = getAllBooks();
+export async function getBooksByCategory(category: string): Promise<Book[]> {
+    const books = await getAllBooks();
     return books.filter((book) =>
         book.categories.some((c) => c.toLowerCase() === category.toLowerCase())
     );
 }
 
 // Get all unique categories
-export function getAllCategories(): string[] {
-    const books = getAllBooks();
+export async function getAllCategories(): Promise<string[]> {
+    const books = await getAllBooks();
     const categories = new Set<string>();
 
     books.forEach((book) => {
@@ -47,8 +62,8 @@ export function getAllCategories(): string[] {
 }
 
 // Get books by difficulty
-export function getBooksByDifficulty(difficulty: Book['difficulty']): Book[] {
-    const books = getAllBooks();
+export async function getBooksByDifficulty(difficulty: Book['difficulty']): Promise<Book[]> {
+    const books = await getAllBooks();
     return books.filter((book) => book.difficulty === difficulty);
 }
 
@@ -96,7 +111,7 @@ export async function searchAllBooks(
     query: string,
     options?: { includeExternal?: boolean; limit?: number }
 ): Promise<Book[]> {
-    const localResults = searchBooks(query);
+    const localResults = await searchBooks(query);
 
     if (!options?.includeExternal) {
         return localResults;
