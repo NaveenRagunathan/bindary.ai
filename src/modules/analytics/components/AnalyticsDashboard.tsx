@@ -16,8 +16,10 @@ export function AnalyticsDashboard() {
     const [sessions, setSessions] = useState<StoredReadingSession[]>([]);
     const [books, setBooks] = useState<BookType[]>([]);
     const [streak, setStreak] = useState({ current: 0, longest: 0 });
+    const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
+        setIsMounted(true);
         const loadData = async () => {
             setSessions(getReadingSessions());
             setBooks(await getAllBooks());
@@ -117,29 +119,33 @@ export function AnalyticsDashboard() {
                 <Card className="col-span-1 lg:col-span-2 p-6 flex flex-col h-[400px]">
                     <h3 className="text-lg font-bold text-white mb-6">Weekly Activity (Pages)</h3>
                     <div className="flex-1 w-full min-h-0">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={dailyData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                                <XAxis
-                                    dataKey="name"
-                                    stroke="#94a3b8"
-                                    tick={{ fill: '#94a3b8', fontSize: 12 }}
-                                    tickLine={false}
-                                    axisLine={false}
-                                />
-                                <YAxis
-                                    stroke="#94a3b8"
-                                    tick={{ fill: '#94a3b8', fontSize: 12 }}
-                                    tickLine={false}
-                                    axisLine={false}
-                                />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#f8fafc' }}
-                                    cursor={{ fill: '#ffffff05' }}
-                                />
-                                <Bar dataKey="pages" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {isMounted ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={dailyData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                                    <XAxis
+                                        dataKey="name"
+                                        stroke="#94a3b8"
+                                        tick={{ fill: '#94a3b8', fontSize: 12 }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#94a3b8"
+                                        tick={{ fill: '#94a3b8', fontSize: 12 }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#f8fafc' }}
+                                        cursor={{ fill: '#ffffff05' }}
+                                    />
+                                    <Bar dataKey="pages" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-2xl animate-pulse" />
+                        )}
                     </div>
                 </Card>
 
@@ -147,26 +153,30 @@ export function AnalyticsDashboard() {
                 <Card className="col-span-1 p-6 flex flex-col h-[400px]">
                     <h3 className="text-lg font-bold text-white mb-6">Library Status (Mock)</h3>
                     <div className="flex-1 w-full min-h-0 relative">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={pieData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={100}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#f8fafc' }}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
+                        {isMounted ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={pieData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={100}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {pieData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#f8fafc' }}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-2xl animate-pulse" />
+                        )}
                         {/* Legend */}
                         <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-4 text-xs text-text-secondary">
                             {pieData.map(entry => (
