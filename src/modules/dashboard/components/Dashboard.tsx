@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BookOpen, Clock, Target, Flame, ChevronRight, Sparkles, Plus, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
 import { BookCard } from '@/modules/library';
@@ -18,6 +19,7 @@ interface DashboardProps {
 }
 
 export function Dashboard({ profile }: DashboardProps) {
+    const router = useRouter();
     const [recommendations, setRecommendations] = useState<BookRecommendation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [stats, setStats] = useState<UserStats>({
@@ -98,6 +100,10 @@ export function Dashboard({ profile }: DashboardProps) {
         else if (hour < 18) setGreeting('Good afternoon');
         else setGreeting('Good evening');
     }, []);
+
+    const handleBookClick = (book: Book) => {
+        router.push(`/library/${book.id}`);
+    };
 
     return (
         <div className="space-y-10 pb-20">
@@ -188,6 +194,7 @@ export function Dashboard({ profile }: DashboardProps) {
                                     book={rec.book}
                                     recommendation={rec}
                                     index={index + 1}
+                                    onSelect={handleBookClick}
                                     onTranslateWisdom={(book) => setSelectedBookForWisdom(book)}
                                 />
                             ))}

@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, Target, Brain, Award, Edit3, Save, X } from 'lucide-react';
+import { User, Target, Brain, Award, Edit3, Save, X, RefreshCw, AlertCircle } from 'lucide-react';
 import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
 import { getUserProfile, saveUserProfile } from '@/lib/storage';
 import { getUserProfileFromDB } from '@/app/actions';
+import { isPlaceholderProfile } from '@/modules/onboarding/constants';
 import type { UserProfile, PersonalityTraits } from '@/types';
 
 export default function ProfilePage() {
@@ -13,6 +14,8 @@ export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [isPlaceholder, setIsPlaceholder] = useState(false);
+    const [showRegenerateModal, setShowRegenerateModal] = useState(false);
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -31,6 +34,11 @@ export default function ProfilePage() {
                 }
 
                 setProfile(data);
+
+                // Check if profile has placeholder values
+                if (data) {
+                    setIsPlaceholder(isPlaceholderProfile(data));
+                }
             } catch (error) {
                 console.error('Failed to load profile:', error);
             } finally {
@@ -50,6 +58,11 @@ export default function ProfilePage() {
         saveUserProfile(updated);
         setProfile(updated);
         setIsEditing(false);
+    };
+
+    const handleRegenerate = () => {
+        // Redirect to onboarding to regenerate profile
+        window.location.href = '/onboarding?regenerate=true';
     };
 
     if (isLoading) {
@@ -112,13 +125,53 @@ export default function ProfilePage() {
                 </div>
             </header>
 
+            {/* Placeholder Warning Banner */}
+            {isPlaceholder && (
+                <Card variant="surface" padding="md" className="border-l-4 border-l-amber-500">
+                    <div className="flex items-start gap-4">
+                        <AlertCircle className="text-amber-500 flex-shrink-0 mt-1" size={24} />
+                        <div className="flex-1 space-y-2">
+                            <h3 className="text-white font-semibold">Using Default Profile Values</h3>
+                            <p className="text-text-secondary text-sm">
+                                Your profile is currently using placeholder values. Complete the personalization process to get AI-powered insights tailored specifically to you.
+                            </p>
+                            <Button
+                                onClick={handleRegenerate}
+                                variant="secondary"
+                                size="sm"
+                                icon={<RefreshCw size={16} />}
+                                className="mt-2"
+                            >
+                                Personalize My Profile
+                            </Button>
+                        </div>
+                    </div>
+                </Card>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                 {/* Personality Traits */}
                 <Card variant="glass" padding="xl" className="md:col-span-8 space-y-8">
-                    <h2 className="text-xl font-bold text-white flex items-center gap-3">
-                        <Brain className="text-primary" size={20} />
-                        Personality Insights
-                    </h2>
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                            <Brain className="text-primary" size={20} />
+                            Personality Insights
+                            {isPlaceholder && (
+                                <span className="text-xs font-normal text-amber-500 bg-amber-500/10 px-2 py-1 rounded-full">
+                                    Default Values
+                                </span>
+                            )}
+                        </h2>
+                        {!isPlaceholder && (
+                            <button
+                                onClick={handleRegenerate}
+                                className="text-sm text-text-muted hover:text-primary transition-colors flex items-center gap-1"
+                            >
+                                <RefreshCw size={14} />
+                                Regenerate
+                            </button>
+                        )}
+                    </div>
                     <div className="space-y-6">
                         {Object.entries(profile.personality).map(([trait, value]) => {
                             if (typeof value !== 'number') return null;

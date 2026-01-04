@@ -4,6 +4,7 @@ import { Button } from '@/ui/Button';
 import type { ChatMessage, UserProfile } from '@/types';
 import { streamChat, analyzePersonality } from '@/lib/api';
 import { saveUserProfile, generateId } from '@/lib/storage';
+import { DEFAULT_PERSONALITY_TRAITS, DEFAULT_GOAL_DESCRIPTION, DEFAULT_CHALLENGE } from '../constants';
 import './OnboardingFlow.css';
 
 interface OnboardingFlowProps {
@@ -111,16 +112,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                 updatedAt: new Date().toISOString(),
                 name: 'User', // Could extract from conversation
                 lifestage: profileData.lifestage || 'other',
-                personality: profileData.personality || {
-                    openness: 70,
-                    conscientiousness: 70,
-                    extraversion: 50,
-                    agreeableness: 70,
-                    neuroticism: 40,
-                    analyticalThinking: 70,
-                    creativity: 60,
-                    ambition: 75,
-                },
+                personality: profileData.personality || DEFAULT_PERSONALITY_TRAITS,
                 learningStyle: profileData.learningStyle || 'reading-writing',
                 goals: (profileData.goals || []).map((g: { category: string; description: string; priority: number }) => ({
                     id: generateId(),
@@ -161,26 +153,17 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             updatedAt: new Date().toISOString(),
             name: 'User',
             lifestage: 'other',
-            personality: {
-                openness: 70,
-                conscientiousness: 70,
-                extraversion: 50,
-                agreeableness: 70,
-                neuroticism: 40,
-                analyticalThinking: 70,
-                creativity: 60,
-                ambition: 75,
-            },
+            personality: DEFAULT_PERSONALITY_TRAITS,
             learningStyle: 'reading-writing',
             goals: [{
                 id: generateId(),
                 category: 'personal-growth',
-                description: 'General self-improvement',
+                description: DEFAULT_GOAL_DESCRIPTION,
                 timeframe: '6 months',
                 priority: 3,
                 createdAt: new Date().toISOString(),
             }],
-            challenges: ['Finding time to read'],
+            challenges: [DEFAULT_CHALLENGE],
             timeAvailable: {
                 hoursPerWeek: 5,
                 preferredTimes: ['evening'],
