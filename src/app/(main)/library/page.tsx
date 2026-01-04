@@ -17,8 +17,8 @@ export default function LibraryPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Placeholder Content */}
-                <Card 
-                    variant="glass" 
+                <Card
+                    variant="glass"
                     className="h-64 flex flex-col items-center justify-center text-center p-6 border-dashed border-2 border-white/10 bg-transparent hover:border-primary/50 transition-colors cursor-pointer group"
                     onClick={() => setIsAddBookOpen(true)}
                 >
@@ -29,16 +29,16 @@ export default function LibraryPage() {
                     <p className="text-sm text-text-muted mt-1">Import a book to start tracking</p>
                 </Card>
             </div>
-            </div>
 
-            <AddBookModal 
-                isOpen={isAddBookOpen} 
+
+            <AddBookModal
+                isOpen={isAddBookOpen}
                 onClose={() => setIsAddBookOpen(false)}
                 onSuccess={() => {
                     // Ideally refresh list, but since we modify local storage and hooks might not listen, a hard refresh or context update is needed. 
                     // For now, simpler approach: window reload or rely on simple state update if list was fetched.
                     // Assuming getAllBooks is called on render, triggering a re-render might not be enough if it's not a state.
-                    window.location.reload(); 
+                    window.location.reload();
                 }}
             />
         </div >
