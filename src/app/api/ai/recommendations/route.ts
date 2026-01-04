@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
         }));
 
         const response = await getOpenAIClient().chat.completions.create({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-4o-mini',
             messages: [
                 { role: 'system', content: SYSTEM_PROMPT },
                 {
@@ -94,23 +94,24 @@ export async function POST(req: NextRequest) {
                     content: `User Profile:
 ${JSON.stringify(profile, null, 2)}
 
-Available Books:
-${JSON.stringify(booksSummary, null, 2)}
+Available Books (Top ${Math.min(books.length, 20)} candidates):
+${JSON.stringify(booksSummary.slice(0, 20), null, 2)}
 
-Select and rank the top 5 books for this user. Return a JSON array with:
+Select and rank the top 3 books for this user. Return a JSON array with:
 [
   {
     "bookId": string,
     "relevanceScore": 0-100,
-    "rationale": string (2-3 sentences explaining why THIS user needs THIS book),
+    "rationale": string (1 concise sentence explaining fit),
     "sequenceOrder": number (1 = read first),
-    "matchingGoals": [string] (which of their goals this addresses)
+    "matchingGoals": [string] (max 2)
   }
 ]`,
                 },
             ],
             response_format: { type: 'json_object' },
-            temperature: 0.4,
+            temperature: 0.3,
+            max_tokens: 1000,
         });
 
         const result = JSON.parse(response.choices[0].message.content || '{}');
