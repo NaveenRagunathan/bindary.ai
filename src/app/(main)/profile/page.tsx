@@ -28,7 +28,20 @@ export default function ProfilePage() {
         setIsEditing(false);
     };
 
-    if (!profile) return null;
+    if (!profile) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+                <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center">
+                    <User size={48} className="text-white/20" />
+                </div>
+                <div className="space-y-2">
+                    <h1 className="text-2xl font-bold text-white">Profile Not Found</h1>
+                    <p className="text-text-secondary max-w-md">It looks like you haven't set up your profile yet. Visit the dashboard to get started.</p>
+                </div>
+                <Button onClick={() => window.location.href = '/dashboard'}>Go to Dashboard</Button>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto space-y-10 pb-20">

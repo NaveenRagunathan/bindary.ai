@@ -90,12 +90,14 @@ export function Dashboard({ profile }: DashboardProps) {
         setIsLoading(false);
     };
 
-    const greeting = () => {
+    const [greeting, setGreeting] = useState('Good morning');
+
+    useEffect(() => {
         const hour = new Date().getHours();
-        if (hour < 12) return 'Good morning';
-        if (hour < 18) return 'Good afternoon';
-        return 'Good evening';
-    };
+        if (hour < 12) setGreeting('Good morning');
+        else if (hour < 18) setGreeting('Good afternoon');
+        else setGreeting('Good evening');
+    }, []);
 
     return (
         <div className="space-y-10 pb-20">
@@ -103,7 +105,7 @@ export function Dashboard({ profile }: DashboardProps) {
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-1">
                     <h1 className="text-4xl font-display font-bold tracking-tight text-white">
-                        {greeting()}, <span className="text-primary">{profile.name}</span>
+                        {greeting}, <span className="text-primary">{profile.name}</span>
                     </h1>
                     <p className="text-text-secondary">
                         Ready to continue your journey? You have <span className="text-white font-medium">{recommendations.length} new insights</span> waiting.
