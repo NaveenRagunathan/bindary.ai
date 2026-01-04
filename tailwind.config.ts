@@ -5,6 +5,9 @@ const config: Config = {
         "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+        "./src/layout/**/*.{js,ts,jsx,tsx,mdx}",
+        "./src/modules/**/*.{js,ts,jsx,tsx,mdx}",
+        "./src/ui/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
         extend: {
@@ -37,6 +40,7 @@ const config: Config = {
             fontFamily: {
                 sans: ["var(--font-sans)"],
                 display: ["var(--font-display)"],
+                serif: ["var(--font-display)"],
                 mono: ["var(--font-mono)"],
             },
         },

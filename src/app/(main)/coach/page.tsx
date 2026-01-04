@@ -1,16 +1,18 @@
-'use client';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getUserProfileFromDB } from "@/app/actions";
+import { AICoach } from '@/modules/coach';
 
-import { AICoach } from '@/features/coach';
+export default async function CoachPage() {
+    const session = await getServerSession(authOptions);
+    if (!session) redirect('/api/auth/signin');
 
-export default function CoachPage() {
+    const profile = await getUserProfileFromDB();
+
     return (
         <div className="p-8 h-[calc(100vh-2rem)]">
-            {/* 
-                The AICoach component currently has its own layout/height management.
-                We might need to adjust it to fit the new MainLayout.
-                For now, wrapping it in a container.
-             */}
-            <AICoach />
+            <AICoach profile={profile} />
         </div>
     );
 }

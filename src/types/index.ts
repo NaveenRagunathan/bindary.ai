@@ -1,4 +1,20 @@
-// User Profile Types
+/**
+ * Domain Types
+ * 
+ * These types are OWNED by specific modules:
+ * - UserProfile, ReadingProgress → User/Profile service
+ * - Book, BookRecommendation → Library/Recommendation service
+ * - ChatMessage, Conversation → AI service
+ * 
+ * For API contracts (DTOs), see ./dto/index.ts
+ */
+
+// Re-export DTOs for convenience
+export * from './dto';
+
+// ============================================
+// User Profile Types (Owner: User Service)
+// ============================================
 export interface UserProfile {
     id: string;
     createdAt: string;
@@ -146,6 +162,7 @@ export interface ReadingProgress {
 
     // Wisdom Application
     actionItems: ActionItem[];
+    experiments: Experiment[];
     reflections: Reflection[];
 }
 
@@ -171,9 +188,24 @@ export interface ActionItem {
     concept: string;
     action: string;
     context: string;
+    why: string;
+    when: string;
     status: 'pending' | 'in-progress' | 'completed';
     dueDate?: string;
     completedAt?: string;
+    specificExample?: string;
+}
+
+export interface Experiment {
+    id: string;
+    title: string;
+    hypothesis: string;
+    steps: string[];
+    durationDays: number;
+    startDate: string;
+    status: 'active' | 'completed' | 'failed';
+    results?: string;
+    reflectionPrompts: string[];
 }
 
 export interface Reflection {
@@ -181,6 +213,36 @@ export interface Reflection {
     prompt: string;
     response: string;
     bookId: string;
+    createdAt: string;
+}
+
+// Storage specific types
+export interface StoredActionItem {
+    id: string;
+    bookId: string;
+    bookTitle: string;
+    concept: string;
+    action: string;
+    why: string;
+    when: string;
+    status: 'pending' | 'in-progress' | 'completed';
+    createdAt: string;
+    completedAt?: string;
+    specificExample?: string;
+}
+
+export interface StoredExperiment {
+    id: string;
+    bookId: string;
+    bookTitle: string;
+    title: string;
+    hypothesis: string;
+    steps: string[];
+    durationDays: number;
+    startDate: string;
+    status: 'active' | 'completed' | 'failed';
+    results?: string;
+    reflectionPrompts: string[];
     createdAt: string;
 }
 
@@ -234,3 +296,26 @@ export interface DailyGoal {
     actualPages: number;
     completed: boolean;
 }
+
+// ============================================
+// Research Assistant Types
+// ============================================
+
+export interface ResearchSource {
+    id: string;
+    title: string;
+    url?: string;
+    author?: string;
+    publisher?: string;
+    snippet: string;
+    relevanceScore: number;
+    type: 'web' | 'book' | 'academic';
+    publishedDate?: string;
+}
+
+export interface ResearchMessage extends ChatMessage {
+    sources?: ResearchSource[];
+    isSynthesizing?: boolean;
+    relatedQueries?: string[];
+}
+

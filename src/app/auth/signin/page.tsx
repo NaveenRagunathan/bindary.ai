@@ -4,12 +4,28 @@ import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Mail, Lock, ArrowRight, UserPlus, LogIn } from 'lucide-react';
-import { AuthInput, SubmitButton } from '@/features/auth/components/AuthComponents';
+import { AuthInput, SubmitButton } from '@/modules/auth/components/AuthComponents';
 
 function AuthContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const callbackUrl = searchParams.get('callbackUrl') || '/';
+
+    // Get callback URL and ensure it's relative to preventing open redirect/localhost issues
+    const getSafeCallbackUrl = () => {
+        const url = searchParams.get('callbackUrl');
+        if (!url) return '/dashboard';
+
+        if (url.startsWith('/')) return url;
+
+        try {
+            const parsedUrl = new URL(url);
+            return parsedUrl.pathname + parsedUrl.search;
+        } catch {
+            return '/dashboard';
+        }
+    };
+
+    const callbackUrl = getSafeCallbackUrl();
 
     const [mode, setMode] = useState<'signin' | 'signup'>('signin');
     const [email, setEmail] = useState('');

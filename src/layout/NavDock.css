@@ -1,0 +1,119 @@
+/* NavDock.css */
+
+.nav-dock-container {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.nav-dock {
+    pointer-events: auto;
+    background: rgba(15, 15, 15, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 0 20px rgba(212, 175, 55, 0.1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-dock:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+    background: rgba(20, 20, 20, 0.8);
+}
+
+.nav-dock-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    color: var(--color-text-secondary);
+    transition: all 0.3s ease;
+}
+
+.nav-dock-item:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-4px) scale(1.1);
+}
+
+.nav-dock-item.active {
+    color: var(--color-primary);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.nav-dock-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -0.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--color-primary);
+}
+
+.nav-dock-tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--color-surface-elevated);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    border: 1px solid var(--color-border-light);
+    box-shadow: var(--shadow-xl);
+    pointer-events: none;
+}
+
+.nav-dock-item:hover .nav-dock-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .nav-dock-container {
+        bottom: 1rem;
+        padding: 0 1rem;
+    }
+
+    .nav-dock {
+        width: 100%;
+        max-width: 400px;
+        justify-content: space-around;
+        border-radius: 1.5rem;
+    }
+
+    .nav-dock-tooltip {
+        display: none;
+    }
+}

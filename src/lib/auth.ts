@@ -1,6 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "@/lib/mongodb";
-import User from "@/features/auth/models/User";
+import User from "@/modules/auth/models/User";
 import bcrypt from "bcryptjs";
 import { AuthOptions } from "next-auth";
 
@@ -45,7 +45,7 @@ export const authOptions: AuthOptions = {
         },
         async session({ session, token }) {
             if (session.user) {
-                (session.user as any).id = token.id;
+                session.user.id = token.id as string;
             }
             return session;
         }

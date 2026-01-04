@@ -1,1 +1,0 @@
-export { WisdomTranslator } from './WisdomTranslator';
