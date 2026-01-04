@@ -46,7 +46,7 @@ export function Dashboard({ profile }: DashboardProps) {
 
         if (recs.length === 0) {
             try {
-                const books = getAllBooks();
+                const books = await getAllBooks();
                 recs = await generateRecommendations(profile, books);
                 saveRecommendations(recs);
             } catch (error) {
@@ -80,7 +80,7 @@ export function Dashboard({ profile }: DashboardProps) {
     const refreshRecommendations = async () => {
         setIsLoading(true);
         try {
-            const books = getAllBooks();
+            const books = await getAllBooks();
             const recs = await generateRecommendations(profile, books);
             saveRecommendations(recs);
             setRecommendations(recs);
