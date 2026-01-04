@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Bell, Moon, Trash2, Calendar, RefreshCw } from 'lucide-react';
+import { User, Bell, Moon, Trash2, Calendar, LogOut } from 'lucide-react';
 import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
 import { getSettings, saveSettings, clearAllData } from '@/lib/storage';
+import { signOut } from 'next-auth/react';
 import type { AppSettings } from '@/lib/storage';
 
 export default function SettingsPage() {
@@ -27,13 +28,19 @@ export default function SettingsPage() {
         }
     };
 
+    const handleSignOut = async () => {
+        await signOut({ callbackUrl: '/auth/signin' });
+    };
+
     if (!settings) return null;
 
     return (
         <div className="max-w-3xl mx-auto space-y-10 pb-20">
             <header className="space-y-2">
                 <h1 className="text-4xl font-display font-bold text-white tracking-tight flex items-center gap-4">
-                    <SettingsIcon className="text-primary" size={32} />
+                    <div className="p-2 bg-white/5 rounded-xl">
+                        <User className="text-primary" size={32} />
+                    </div>
                     Settings
                 </h1>
                 <p className="text-text-secondary">Configure your immersive reading environment.</p>
@@ -105,21 +112,33 @@ export default function SettingsPage() {
                     </Card>
                 </section>
 
-                {/* Data & Privacy */}
+                {/* Account & Data */}
                 <section className="space-y-4">
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-text-muted px-2 flex items-center gap-2 text-red-400">
-                        <Trash2 size={14} />
-                        Danger Zone
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-text-muted px-2 flex items-center gap-2">
+                        <User size={14} />
+                        Account & Data
                     </h2>
-                    <Card variant="surface" padding="xl" className="border-red-500/10 bg-red-500/5 space-y-4">
-                        <div>
-                            <h3 className="text-white font-semibold">Clear All Data</h3>
-                            <p className="text-sm text-text-muted">This resets the application to its initial state. This action is irreversible.</p>
-                        </div>
-                        <Button variant="ghost" onClick={handleClearData} className="text-red-400 hover:bg-red-500/10 hover:text-red-400 border-red-500/20">
-                            Perform Full Reset
-                        </Button>
-                    </Card>
+                    <div className="grid gap-4">
+                        <Card variant="glass" padding="xl" className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-white font-semibold">Sign Out</h3>
+                                <p className="text-sm text-text-muted">End your current session.</p>
+                            </div>
+                            <Button variant="secondary" onClick={handleSignOut} icon={<LogOut size={16} />}>
+                                Sign Out
+                            </Button>
+                        </Card>
+
+                        <Card variant="surface" padding="xl" className="border-red-500/10 bg-red-500/5 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-white font-semibold">Reset Application</h3>
+                                <p className="text-sm text-text-muted">Clear local data and reset progress.</p>
+                            </div>
+                            <Button variant="ghost" onClick={handleClearData} className="text-red-400 hover:bg-red-500/10 hover:text-red-400 border-red-500/20">
+                                Reset Data
+                            </Button>
+                        </Card>
+                    </div>
                 </section>
             </div>
         </div>

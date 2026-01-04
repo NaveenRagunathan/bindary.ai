@@ -5,15 +5,39 @@ import { User, Target, Brain, Award, Edit3, Save, X } from 'lucide-react';
 import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
 import { getUserProfile, saveUserProfile } from '@/lib/storage';
+import { getUserProfileFromDB } from '@/app/actions';
 import type { UserProfile, PersonalityTraits } from '@/types';
 
 export default function ProfilePage() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setProfile(getUserProfile());
+        const loadProfile = async () => {
+            setIsLoading(true);
+            try {
+                // Try local storage first
+                let data = getUserProfile();
+
+                // If not found locally, try server
+                if (!data) {
+                    data = await getUserProfileFromDB();
+                    // If found on server, sync to local
+                    if (data) {
+                        saveUserProfile(data);
+                    }
+                }
+
+                setProfile(data);
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadProfile();
     }, []);
 
     useEffect(() => {
@@ -28,6 +52,14 @@ export default function ProfilePage() {
         setIsEditing(false);
     };
 
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            </div>
+        );
+    }
+
     if (!profile) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
@@ -36,9 +68,9 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2">
                     <h1 className="text-2xl font-bold text-white">Profile Not Found</h1>
-                    <p className="text-text-secondary max-w-md">It looks like you haven't set up your profile yet. Visit the dashboard to get started.</p>
+                    <p className="text-text-secondary max-w-md">It looks like you haven't set up your profile yet. Create one to unlock personalized insights.</p>
                 </div>
-                <Button onClick={() => window.location.href = '/dashboard'}>Go to Dashboard</Button>
+                <Button onClick={() => window.location.href = '/dashboard'}>Create Profile</Button>
             </div>
         );
     }
