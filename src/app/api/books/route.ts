@@ -80,20 +80,24 @@ export async function POST(req: NextRequest) {
         });
 
         // Convert to application Book interface
+        const bookObj = newBook.toObject();
         const responseBook: Book = {
-            ...newBook.toObject(),
+            ...bookObj,
             id: newBook._id.toString(),
+            description: bookObj.description || 'Manually added book',
+            publishedYear: bookObj.publishedYear || new Date().getFullYear(),
+            estimatedHours: bookObj.estimatedHours || 0,
             keyTopics: [],
             targetAudience: [],
-            prerequisites: []
-        };
+                                    prerequisites: []
+    };
 
-        return NextResponse.json(responseBook, { status: 201 });
-    } catch (error) {
-        console.error('Failed to create user book:', error);
-        return NextResponse.json(
-            { error: 'Internal Server Error' },
-            { status: 500 }
-        );
-    }
+    return NextResponse.json(responseBook, { status: 201 });
+} catch (error) {
+    console.error('Failed to create user book:', error);
+    return NextResponse.json(
+        { error: 'Internal Server Error' },
+        { status: 500 }
+    );
+}
 }
