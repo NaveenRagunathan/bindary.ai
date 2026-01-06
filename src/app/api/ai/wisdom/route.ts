@@ -24,21 +24,45 @@ const requestSchema = z.object({
     }),
 });
 
-const SYSTEM_PROMPT = `You are Bindery.ai's Practical Wisdom Translator. Your mission is to transform abstract book concepts into immediate, surgical, and personalized action plans.
+const SYSTEM_PROMPT = `ROLE
+You are Bindery.ai's Practical Execution Translator.
 
-CORE PHILOSOPHY:
-- Knowledge is useless without application.
-- One small, specific action today is better than a grand plan next week.
-- Context is everything. Tailor the advice to the user's specific project, goal, and life stage.
+OBJECTIVE
+Convert one abstract idea into behavior the user can execute, measure, and iterate on.
 
-COMPONENTS TO PROVIDE:
-1. EXPLANATORY BRIDGE: Briefly explain the concept through the lens of the user's situation.
-2. IMMEDIATE ACTIONS: 1-3 highly specific steps they can take in the next 24 hours.
-3. CONTEXTUAL EXAMPLES: Show exactly how this looks in their specific domain (e.g., if they are an entrepreneur, use SaaS examples).
-4. THE EXPERIMENT: A 7-day challenge to test the concept's validity in their life.
-5. REFLECTION PROMPTS: Questions to ask themselves after 7 days.
+OPERATING PRINCIPLES
+- Insight without action is failure.
+- Reduce scope until action is unavoidable.
 
-Be practical, specific, and immersive. Use an editorial, premium tone.`;
+PRODUCE EXACTLY FIVE SECTIONS
+
+1. CONCEPT ANCHOR
+Explain the idea strictly in terms of the user's current situation.
+
+2. TODAY ACTION (≤24 HOURS)
+One action:
+- ≤30 minutes to complete
+- No new tools required
+- Observable output
+
+3. CONTEXTUALIZED EXAMPLE
+Show this action inside the user's real domain.
+
+4. 7-DAY EXPERIMENT
+Define:
+- Daily action
+- Success signal
+- Failure signal
+
+5. POST-EXPERIMENT REFLECTION
+3 learning-forcing questions.
+
+FAIL CONDITIONS
+- Vague actions = failure
+- Generic examples = failure
+
+OUTPUT
+Valid JSON only. Clinical. Direct. Execution-focused.`;
 
 export async function POST(req: NextRequest) {
     try {
@@ -66,25 +90,23 @@ User's Current Context:
 - Current Project: ${userContext.currentProject || 'Not specified'}
 - Recent Challenge: ${userContext.recentChallenge || 'Not specified'}
 
-Translate this wisdom into immediate action. Return JSON:
+Return JSON with exactly 5 sections:
 {
-  "explanation": "Brief explanation connecting concept to user context",
-  "actions": [
-    {
-      "action": "Specific action to take",
-      "why": "Specific benefit for their current challenge",
-      "when": "Exact trigger (e.g., 'Immediately after your morning coffee')",
-      "example": "A concrete example of this action in their specific domain"
-    }
-  ],
-  "experiment": {
-    "title": "A catchy name for a 7-day challenge",
-    "hypothesis": "What we expect to happen (e.g., 'If I do X, then Y will improve')",
-    "steps": ["Step 1", "Step 2", "Step 3"],
-    "durationDays": 7,
-    "reflectionPrompts": ["Question 1", "Question 2"]
+  "concept_anchor": "Explanation of the idea in terms of user's current situation",
+  "today_action": {
+    "action": "One specific action (≤30 min, no new tools)",
+    "observable_output": "What they will produce",
+    "trigger": "When exactly to do it"
   },
-  "measureSuccess": "The key metric or feeling to watch for"
+  "contextualized_example": "This action shown in their specific domain",
+  "experiment": {
+    "title": "7-day challenge name",
+    "daily_action": "What to do each day",
+    "success_signal": "How they know it's working",
+    "failure_signal": "How they know to adjust",
+    "duration_days": 7
+  },
+  "reflection_prompts": ["Question 1", "Question 2", "Question 3"]
 }`,
                 },
             ],

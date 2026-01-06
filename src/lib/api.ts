@@ -68,17 +68,13 @@ export async function chat(
     return fullResponse;
 }
 
-/**
- * Generate book recommendations based on user profile
- */
 export async function generateRecommendations(
-    profile: UserProfile,
-    books: Book[]
+    profile: UserProfile
 ): Promise<BookRecommendation[]> {
     const response = await fetch(`${API_BASE}/recommendations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profile, books }),
+        body: JSON.stringify({ profile }),
     });
 
     if (!response.ok) {
@@ -89,20 +85,33 @@ export async function generateRecommendations(
     const data = await response.json();
     const recommendations = data.recommendations || [];
 
-    // Map bookIds back to full book objects
-    return recommendations.map((rec: {
-        bookId: string;
-        relevanceScore: number;
-        rationale: string;
-        sequenceOrder: number;
-        matchingGoals: string[];
-    }) => ({
-        book: books.find((b) => b.id === rec.bookId)!,
-        relevanceScore: rec.relevanceScore,
-        rationale: rec.rationale,
-        sequenceOrder: rec.sequenceOrder,
-        matchingGoals: rec.matchingGoals,
-    })).filter((rec: BookRecommendation) => rec.book);
+    // Map AI results to BookRecommendation objects
+    // Note: We create new book objects here since they are AI-generated
+    return recommendations.map((rec: any) => {
+        // Construct a full Book object from the partial AI data
+        const book: Book = {
+            id: rec.id || rec.bookId || `generated-${Math.random().toString(36).substr(2, 9)}`,
+            title: rec.title,
+            author: rec.author,
+            description: rec.description || rec.rationale,
+            pageCount: rec.pageCount || 250, // Estimate if missing
+            categories: rec.categories || [],
+            difficulty: rec.difficulty || 'intermediate',
+            keyTopics: rec.keyTopics || [],
+            targetAudience: rec.targetAudience || [],
+            prerequisites: [],
+            publishedYear: new Date().getFullYear(), // Default if missing
+            estimatedHours: rec.estimatedHours || 5,
+        };
+
+        return {
+            book,
+            relevanceScore: rec.relevanceScore,
+            rationale: rec.rationale,
+            sequenceOrder: rec.sequenceOrder,
+            matchingGoals: rec.matchingGoals,
+        };
+    }).filter((rec: BookRecommendation) => rec.book && rec.book.title);
 }
 
 /**

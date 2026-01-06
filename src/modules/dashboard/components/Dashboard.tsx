@@ -48,8 +48,8 @@ export function Dashboard({ profile }: DashboardProps) {
 
         if (recs.length === 0) {
             try {
-                const books = await getAllBooks();
-                recs = await generateRecommendations(profile, books);
+                // Generate new recommendations directly from AI
+                recs = await generateRecommendations(profile);
                 saveRecommendations(recs);
             } catch (error) {
                 console.error('Error generating recommendations:', error);
@@ -82,8 +82,7 @@ export function Dashboard({ profile }: DashboardProps) {
     const refreshRecommendations = async () => {
         setIsLoading(true);
         try {
-            const books = await getAllBooks();
-            const recs = await generateRecommendations(profile, books);
+            const recs = await generateRecommendations(profile);
             saveRecommendations(recs);
             setRecommendations(recs);
         } catch (error) {

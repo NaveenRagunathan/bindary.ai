@@ -14,17 +14,6 @@ function getOpenAIClient(): OpenAI {
     return openai;
 }
 
-// Validation schemas
-const bookSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    author: z.string(),
-    categories: z.array(z.string()),
-    keyTopics: z.array(z.string()),
-    difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
-    targetAudience: z.array(z.string()).optional(),
-});
-
 const userProfileSchema = z.object({
     name: z.string(),
     lifestage: z.string(),
@@ -49,19 +38,40 @@ const userProfileSchema = z.object({
 
 const requestSchema = z.object({
     profile: userProfileSchema,
-    books: z.array(bookSchema),
 });
 
-const SYSTEM_PROMPT = `You are Bindery.ai's recommendation engine. Analyze the user's profile and recommend books with precision.
+const SYSTEM_PROMPT = `ROLE: Bindery.ai Book Decision Engine — select books that create maximum transformation in user's life trajectory.
 
-For each recommendation, provide:
-1. Why this book matters for THIS specific person
-2. How it connects to their stated goals
-3. Key concepts they'll learn
-4. The best order to read books (sequence matters!)
-5. A confidence score (0-100) for the match
+CORE PRINCIPLES:
+1. SIGNAL>NOISE: Popular≠relevant. Exclude any book without concrete evidence of fit for THIS user.
+2. SEQUENTIAL: Book N builds foundation for N+1. Book 1=immediately actionable, no prerequisites.
+3. TIME-TO-VALUE: Prioritize books delivering insights in first 3 chapters.
+4. GAP-FIRST: Every book fills a SPECIFIC diagnosed gap (knowledge/skill/mindset/system/confidence).
+5. ANTI-POPULARITY: If recommended only because "everyone reads it," reject. Find the targeted alternative.
+6. PRACTICAL: Books must contain frameworks/mental models, not just inspiration.
+7. LEARNING-MATCH: Adapt to user's style (conceptual vs action-oriented vs narrative).
 
-Be specific about WHY each book helps THEM specifically. Generic recommendations are useless.`;
+SELECTION PROCESS:
+1. Model user's transformation target (from X₁ → X₂ state)
+2. Diagnose root bottleneck blocking progress
+3. Map each book to a specific gap
+4. Sequence with prerequisites
+5. Validate: substitution test, timing test, completion likelihood
+
+QUALITY GATES:
+- ZERO generic justifications
+- Each book has user-specific reasoning
+- No two books fill same gap
+- Smooth difficulty progression
+- Include "hidden gems" (not just bestsellers)
+
+FAILURE CONDITIONS:
+- Generic reasoning that could apply to anyone
+- Books recommended because they're famous
+- Vague goal alignment
+- Prerequisites user doesn't have
+
+OUTPUT: Valid JSON only. No prose. This is a LIFE ROADMAP.`;
 
 export async function POST(req: NextRequest) {
     try {
@@ -73,17 +83,7 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { profile, books } = requestSchema.parse(body);
-
-        const booksSummary = books.map((b) => ({
-            id: b.id,
-            title: b.title,
-            author: b.author,
-            categories: b.categories,
-            keyTopics: b.keyTopics,
-            difficulty: b.difficulty,
-            targetAudience: b.targetAudience,
-        }));
+        const { profile } = requestSchema.parse(body);
 
         const response = await getOpenAIClient().chat.completions.create({
             model: 'gpt-4o-mini',
@@ -94,31 +94,51 @@ export async function POST(req: NextRequest) {
                     content: `User Profile:
 ${JSON.stringify(profile, null, 2)}
 
-Available Books (Top ${Math.min(books.length, 20)} candidates):
-${JSON.stringify(booksSummary.slice(0, 20), null, 2)}
-
-Select and rank the top 3 books for this user. Return a JSON array with:
-[
-  {
-    "bookId": string,
-    "relevanceScore": 0-100,
-    "rationale": string (1 concise sentence explaining fit),
-    "sequenceOrder": number (1 = read first),
-    "matchingGoals": [string] (max 2)
-  }
-]`,
+Generate 5 books as a "recommendations" array:
+{
+  "recommendations": [
+    {
+      "title": "string",
+      "author": "string",
+      "id": "kebab-case-slug",
+      "sequence_order": 1-5,
+      "gap_analysis": {
+        "current_state": "specific",
+        "target_state": "specific",
+        "gap_type": "knowledge|skill|mindset|system|confidence"
+      },
+      "why_this_user_now": "2-3 specific sentences",
+      "goal_alignment": "how this advances their stated goal",
+      "practical_application": {
+        "immediate_action": "after chapter 1",
+        "week_1_experiment": "testable action"
+      },
+      "prerequisites": ["book-ids"] or [],
+      "key_frameworks": ["2-3 mental models"],
+      "time_investment": { "reading_hours": int, "total_weeks": int },
+      "alternative_justification": "why THIS over obvious alternative",
+      "confidence_score": 0-100
+    }
+  ]
+}`,
                 },
             ],
             response_format: { type: 'json_object' },
-            temperature: 0.3,
-            max_tokens: 1000,
+            temperature: 0.7,
+            max_tokens: 3000,
         });
 
         const result = JSON.parse(response.choices[0].message.content || '{}');
         const recommendations = result.recommendations || result;
 
+        // Ensure we handle the "recommendations" key from GPT output or direct array
+        // GPT often wraps arrays in a key like "books" or "recommendations" when asked for JSON object
+        const recList = Array.isArray(recommendations)
+            ? recommendations
+            : (result.books || []);
+
         return NextResponse.json({
-            recommendations: Array.isArray(recommendations) ? recommendations : [],
+            recommendations: recList,
         });
     } catch (error) {
         console.error('Recommendations API error:', error);

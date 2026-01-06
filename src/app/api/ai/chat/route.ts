@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { z } from 'zod';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import dbConnect from '@/lib/mongodb';
+import UserBook from '@/modules/library/models/UserBook';
 
 // Lazy initialization to prevent build errors
 let openai: OpenAI | null = null;
@@ -27,69 +31,226 @@ const chatRequestSchema = z.object({
 
 // System prompts for different contexts
 const SYSTEM_PROMPTS = {
-    onboarding: `You are Bindery.ai, an intelligent reading companion. Your role is to deeply understand users and guide them to the perfect books for their journey.
+    onboarding: `ROLE
+You are Bindery.ai's Profiling Agent.
 
-You are conducting an initial assessment to understand:
-1. Their life stage and current situation
-2. Their biggest challenges and goals
-3. Their personality and thinking style
-4. Their learning preferences and reading habits
-5. How much time they can commit to reading
+OBJECTIVE
+Extract enough signal to model:
+- Current state
+- Desired future state
+- Constraints
+- Cognitive tendencies
 
-Be warm, empathetic, and conversational. Ask one question at a time. Listen deeply and ask thoughtful follow-up questions. Your goal is to truly understand who they are and where they want to go.
+METHOD
+- One question at a time
+- Each question must reduce uncertainty
+- Adapt follow-ups dynamically
 
-After gathering enough information (usually 5-8 exchanges), summarize what you've learned and confirm your understanding before moving forward.`,
+YOU ARE IDENTIFYING
+- Dominant bottleneck
+- Motivation driver
+- Learning tolerance
+- Time realism
+- Prior failure patterns
 
-    coaching: `You are Bindery.ai's reading coach. Help users stay accountable, reflect on their reading, and apply what they learn.
+STOPPING CONDITION
+When you can articulate:
+1. What they are trying to change
+2. Why prior attempts stalled
+3. What books will actually help
 
-You can:
-1. Check in on their reading progress
-2. Celebrate wins and understand struggles
-3. Help them reflect on what they're learning
-4. Answer questions about books and concepts
-5. Adjust their reading plan based on life changes
+THEN
+Summarize in 5–7 bullets and confirm.`,
 
-Be supportive, encouraging, and helpful. Remember their context and goals.`,
+    coaching: `ROLE
+You are Bindery.ai's Reading Coach and Feedback Loop.
 
-    recommendation: `You are Bindery.ai's recommendation engine. Analyze the user's profile and recommend books with precision.
+OBJECTIVE
+Ensure reading converts into behavior and momentum.
 
-For each recommendation, provide:
-1. Why this book matters for THIS specific person
-2. How it connects to their stated goals
-3. Key concepts they'll learn
-4. The best order to read books (sequence matters!)
-5. A confidence score (0-100) for the match
+YOU MUST
+- Reference prior context
+- Detect avoidance or stagnation
+- Suggest correction when effort ≠ outcome
 
-Be specific about WHY each book helps THEM specifically. Generic recommendations are useless.`,
+AVOID
+- Cheerleading
+- Passive reassurance
 
-    wisdom: `You are Bindery.ai's wisdom translator. Your job is to take concepts from books and translate them into IMMEDIATE, SPECIFIC actions for the user's exact situation.
+SUCCESS
+User gains clearer action or clearer diagnosis of failure.`,
 
-Given a book concept and the user's current context:
-1. Explain the concept clearly
-2. Connect it to their specific situation
-3. Provide 1-3 concrete actions they can take TODAY
-4. Explain why these actions will work for THEM
-5. Suggest how to measure progress
+    recommendation: `ROLE
+You explain Bindery.ai's book decisions.
 
-Be practical, specific, and actionable. No vague advice.`,
+OBJECTIVE
+Help the user understand:
+- Why these books
+- Why this order
+- What will change after each book
+
+RULE
+Explain decisions. Do not generate new ones.`,
+
+    wisdom: `ROLE
+You are Bindery.ai's Execution Translator.
+
+OBJECTIVE
+Convert book concepts into behavior the user can execute today.
+
+OPERATING PRINCIPLES
+- Insight without action is failure
+- Reduce scope until action is unavoidable
+
+PRODUCE
+1. Concept explained in user's context
+2. One action (≤30 min, no new tools, observable output)
+3. Example in their domain
+4. 7-day experiment with success/failure signals
+5. 3 reflection questions
+
+TONE
+Clinical. Direct. Execution-focused.`,
 };
+
+const tools = [
+    {
+        type: 'function',
+        function: {
+            name: 'add_book_to_library',
+            description: 'Add a book to the user\'s library. Use this when the user explicitly asks to add a book or when you recommend a book and they accept.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    title: { type: 'string', description: 'The exact title of the book' },
+                    author: { type: 'string', description: 'The author of the book' },
+                    pageCount: { type: 'number', description: 'Estimated page count (default to 300 if unknown)' },
+                    description: { type: 'string', description: 'Short summary of the book' }
+                },
+                required: ['title', 'author']
+            }
+        }
+    }
+];
 
 export async function POST(req: NextRequest) {
     try {
-        // Validate API key exists
+        const session = await getServerSession(authOptions);
+        if (!session || !session.user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         if (!process.env.OPENAI_API_KEY) {
-            return NextResponse.json(
-                { error: 'OpenAI API key not configured' },
-                { status: 500 }
-            );
+            return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
         }
 
         const body = await req.json();
         const { messages, context } = chatRequestSchema.parse(body);
 
-        // Create streaming response
+        // First call to OpenAI
+        const response = await getOpenAIClient().chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages: [
+                { role: 'system', content: SYSTEM_PROMPTS[context] },
+                ...messages.map((m) => ({
+                    role: m.role as 'user' | 'assistant',
+                    content: m.content,
+                })),
+            ],
+            tools: tools as any,
+            tool_choice: 'auto',
+            temperature: 0.7,
+        });
+
+        const choice = response.choices[0];
+        const message = choice.message;
+
+        // Check if the model wants to call a tool
+        if (message.tool_calls && message.tool_calls.length > 0) {
+            const toolCall = message.tool_calls[0];
+
+            if (toolCall.type === 'function' && toolCall.function.name === 'add_book_to_library') {
+                const args = JSON.parse(toolCall.function.arguments);
+
+                await dbConnect();
+
+                // Check if book already exists for user
+                const existingBook = await UserBook.findOne({
+                    userId: session.user.id,
+                    title: { $regex: new RegExp(`^${args.title}$`, 'i') }
+                });
+
+                let resultMsg = "";
+                if (existingBook) {
+                    resultMsg = `Book "${args.title}" is already in the library.`;
+                } else {
+                    await UserBook.create({
+                        userId: session.user.id,
+                        title: args.title,
+                        author: args.author,
+                        pageCount: args.pageCount || 300,
+                        difficulty: 'intermediate',
+                        categories: ['Uncategorized'],
+                        description: args.description || 'Added via AI Coach',
+                        publishedYear: new Date().getFullYear(),
+                    });
+                    resultMsg = `Successfully added "${args.title}" by ${args.author} to the library.`;
+                }
+
+                // Call OpenAI again with the tool result to get the final natural language response
+                const secondResponse = await getOpenAIClient().chat.completions.create({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        { role: 'system', content: SYSTEM_PROMPTS[context] },
+                        ...messages.map((m) => ({
+                            role: m.role as 'user' | 'assistant',
+                            content: m.content,
+                        })),
+                        message, // The assistant message with tool_calls
+                        {
+                            role: 'tool',
+                            tool_call_id: toolCall.id,
+                            content: resultMsg
+                        }
+                    ],
+                    stream: true,
+                    temperature: 0.7,
+                });
+
+                // Stream the second response
+                const encoder = new TextEncoder();
+                const readable = new ReadableStream({
+                    async start(controller) {
+                        try {
+                            for await (const chunk of secondResponse) {
+                                const content = chunk.choices[0]?.delta?.content;
+                                if (content) {
+                                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+                                }
+                            }
+                            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                            controller.close();
+                        } catch (error) {
+                            controller.error(error);
+                        }
+                    },
+                });
+
+                return new Response(readable, {
+                    headers: {
+                        'Content-Type': 'text/event-stream',
+                        'Cache-Control': 'no-cache',
+                        'Connection': 'keep-alive',
+                    },
+                });
+            }
+        }
+
+        // If no tool call, assume streaming response for normal chat
+        // We need to re-create the stream since the first call wasn't streaming (to allow tool check)
+        // Optimization: In a production app, we might want to handle this differently to avoid double-latency for normal chats
         const stream = await getOpenAIClient().chat.completions.create({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-4o-mini',
             messages: [
                 { role: 'system', content: SYSTEM_PROMPTS[context] },
                 ...messages.map((m) => ({
@@ -101,7 +262,6 @@ export async function POST(req: NextRequest) {
             temperature: 0.7,
         });
 
-        // Create a ReadableStream for the response
         const encoder = new TextEncoder();
         const readable = new ReadableStream({
             async start(controller) {
@@ -127,6 +287,7 @@ export async function POST(req: NextRequest) {
                 'Connection': 'keep-alive',
             },
         });
+
     } catch (error) {
         console.error('Chat API error:', error);
 
